@@ -2,9 +2,12 @@ import express from 'express';
 import dotenv from 'dotenv';
 import connecDB from './config/db.js';
 import colors from 'colors';
+import {notFound, errorHandler} from './middleware/error.js';
+
 import productRoutes from './routes/productRoutes.js';
 import userRoutes from './routes/userRoutes.js';
-import {notFound, errorHandler} from './middleware/error.js';
+import orderRoute from './routes/orderRoute.js';
+
 
 dotenv.config();
 connecDB();
@@ -19,6 +22,10 @@ app.get('/', (req, res) => {
 
 app.use('/api/products', productRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/orders', orderRoute);
+
+// paypalroute
+app.get('/api/config/paypal', (req, res) => res.send(process.env.PAYPAL_CLIENT_ID))
 
 // error middleware
 app.use(notFound);

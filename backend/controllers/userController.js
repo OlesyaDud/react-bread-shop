@@ -41,8 +41,16 @@ const getUserProfile = asyncHandler(async (req, res) => {
     }
 });
 
+// get users - admin only
+const getUsers = asyncHandler(async (req, res) => {
+// empty object because we want all users 
+    const users = await User.find({});
+    res.json(users);
+});
+
 // update user profile
 const updateUserProfile = asyncHandler(async (req, res) => {
+    // logged in user
     const user = await User.findById(req.user._id);
 
     if(user) {
@@ -60,6 +68,30 @@ const updateUserProfile = asyncHandler(async (req, res) => {
             email: updatedUser.email,
             isAdmin: updatedUser.isAdmin,
             token: generateToken(updatedUser._id)
+        });
+
+    } else {
+       res.status(404)
+        throw new Error('User not found')
+    }
+});
+
+const updateUser = asyncHandler(async (req, res) => {
+    // find by id
+    const user = await User.findById(req.params.id);
+
+    if(user) {
+        user.name = req.body.name || user.name
+        user.email = req.body.email || user.email
+        user.isAdmin = req.body.isAdmin
+
+        const updatedUser = await user.save();
+
+        res.json({
+            _id: updatedUser._id,
+            name: updatedUser.name,
+            email: updatedUser.email,
+            isAdmin: updatedUser.isAdmin
         });
 
     } else {
@@ -101,5 +133,42 @@ const registerUser = asyncHandler(async (req, res) => {
 
 });
 
+const deleteUser = asyncHandler(async (req, res) => {
+    // get user
+        const user = await User.findById(req.params.id);
+    // check for it
+    if(user) {
+        await user.remove();
+        res.json({message: 'User removed'});
+    }else {
+        res.status(404)
+        throw new Error('User not found');
+    };  
+});
 
-export {authUser, registerUser, getUserProfile, updateUserProfile};
+
+// get user by id
+const getUserById = asyncHandler(async (req, res) => {
+// empty object because we want all users 
+    const user = await User.findById(req.params.id).select('-password');
+    if(user) {
+        res.json(user);  
+    } else {
+        res.status(404)
+        throw new Error('User not found');  
+    }
+        
+});
+
+
+
+export {
+    authUser, 
+    registerUser, 
+    getUserProfile, 
+    updateUserProfile, 
+    getUsers, 
+    deleteUser,
+    getUserById,
+    updateUser
+};

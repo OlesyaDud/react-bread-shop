@@ -6,12 +6,13 @@ import {saveShippingAddress} from '../actions/cartActions';
 import Checkout from '../components/Checkout';
 
 const ShipScreen = ({history}) => {
+
     const cart = useSelector(state => state.cart);
     const {shippingAddress} = cart;
 
     const [address, setAddress] = useState(shippingAddress.address);
     const [city, setCity] = useState(shippingAddress.city);
-    const [postalcode, setPostalCode] = useState(shippingAddress.postalcode);
+    const [postalCode, setPostalCode] = useState(shippingAddress.postalCode);
     const [country, setCountry] = useState(shippingAddress.country);
 
     const dispatch = useDispatch();
@@ -19,7 +20,7 @@ const ShipScreen = ({history}) => {
 
     const submitHandler =(e)=> {
         e.preventDefault();
-        dispatch(saveShippingAddress({address, city, postalcode, country}));
+        dispatch(saveShippingAddress({address, city, postalCode, country}));
         // move to next page
         history.push('/payment');
     }
@@ -60,7 +61,7 @@ const ShipScreen = ({history}) => {
                 <Form.Control
                 type='text'
                 placeholder='Enter postalcode'
-                value={postalcode}
+                value={postalCode}
                 required
                 onChange={(e) => setPostalCode(e.target.value)}
                 >
